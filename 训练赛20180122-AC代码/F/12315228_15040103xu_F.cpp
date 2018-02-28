@@ -1,0 +1,31 @@
+#include<stdio.h>
+int main()
+{
+    int n;
+    while(~scanf("%d", &n))
+    {
+        int i, j, num=-1;
+        int high, a[n]={0};
+        for(i=0; i<n; i++)
+        {
+            scanf("%d", &high);
+            for(j=0; j<=num; j++)
+            {
+                if(a[j] >= high)
+                {
+                    a[j] = high;
+                    break;
+                }
+            }
+            if(j > num)
+            {
+                num++;
+                a[num] = high;
+            }
+        }
+        printf("%d\n", num+1);
+        //for(i=0; i<=num; i++)
+        //    printf("%d ", a[i]);
+    }
+    return 0;
+}

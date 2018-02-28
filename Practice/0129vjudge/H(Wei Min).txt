@@ -1,0 +1,34 @@
+根据题意解方程，发现当xi==xj或yi==yj时，两点符合题意，此时需减去x，y都相同的点
+
+#include <stdio.h>
+#include <map>
+using namespace std;
+
+const long long N=(10000000000LL);//为保证数据独立，此处的N定义为1e10，因为x，y的极值为1e9
+map<int,int> x,y;       //分别为相同的x，y点计数；
+map<long long,int> xy;  //为x，y都相同的点计数；
+
+int main(int argc, char const *argv[]) {
+    int n;
+    while(~scanf("%d",&n)){
+        x.clear();y.clear();xy.clear();
+        long long res=0;
+        while(n--){
+            int tmpx,tmpy;
+            scanf("%d%d",&tmpx,&tmpy);
+            res+=x[tmpx]++;           //此处其实是模拟组合的过程，是简化代码的核心
+            res+=y[tmpy]++;
+            res-=xy[tmpx*N+tmpy]++;   //此处的x*N+y，将x，y保存在一个数据中，且保证了数据的独立性
+        }
+        printf("%lld\n",res);
+    }
+    return 0;
+}
+
+模拟组合过程：
+当第一个数据x输入，未发现相同的值，res+0，不变；
+当有相同的数据输入，新数据与之前的数据组合，res++；
+。。。
+若此前有n个相同的x点，新数据与每一个点组合，则res+=n；
+
+解题完毕。

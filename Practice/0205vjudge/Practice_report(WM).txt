@@ -1,0 +1,237 @@
+题目略难，下方题解基本都是暴力思想，没有什么高深的数据结构用法
+
+C：这题的意思是找最多的数，使得两两不能互相整除，先看数据范围，最大1000个数，每个数为64位整数
+因为只有1000个数，所以可以暴力，代码如下：
+#include <string>
+#include <stdio.h>
+#include <string.h>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+typedef long long ll;
+
+const int N=1005;
+ll a[N],cnt[N];
+bool vis[N];
+
+int main(){
+    int t;
+    scanf("%d",&t);
+    while(t--){
+        int n;
+        scanf("%d",&n);
+        for(int i=0;i<n;i++) scanf("%lld",&a[i]);
+        sort(a,a+n);
+        for(int i=0;i<n;i++){
+            cnt[i]=1;
+            memset(vis,0,sizeof(vis));
+            for(int j=i+1;j<n;j++){     //判断a[j]是否可选
+                if(vis[j]||a[j]%a[i]==0) continue;
+                for(int k=j+1;k<n;k++)
+                    if(a[k]%a[j]==0) vis[k]=1; //此时已选中a[j]，需消除a[j]的倍数
+                cnt[i]++;
+            }
+        }
+        printf("%lld\n",*max_element(cnt,cnt+n));  //输出最大答案
+    }
+    return 0;
+}
+调用系统栈，dfs递归的代码如下（这一段代码跑了15ms，上面的代码跑了100ms，但下面的代码可能更难理解一些）：
+#include <string>
+#include <stdio.h>
+#include <string.h>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+typedef long long ll;
+
+const int maxn=1001;
+ll a[maxn],n;
+bool vis[maxn];
+
+void dfs(int x){
+    vis[x]=1;
+    for(int i=x+1;i<n;i++)
+        if(a[i]%a[x]==0){
+            dfs(i);
+            return;
+        }
+}
+
+int main(){
+    int t;
+    scanf("%d",&t);
+    while(t--){
+        memset(vis,0,sizeof(vis));
+        scanf("%d",&n);
+        for(int i=0;i<n;i++) scanf("%lld",&a[i]);
+        sort(a,a+n);
+        int ans=0;
+        for(int i=0;i<n;i++)
+            if(!vis[i]){
+                dfs(i);
+                ans++;
+            }
+        printf("%d\n",ans);
+    }
+    return 0;
+}
+
+
+D：找出字符串每一个子串出现的次数，再相加模10007，看数据范围，最大200000，如果每一个子串都找一边的话，应该是会T的
+(没试过暴力)，但是字符串的子串是从头找起递推过来的，所以找第n个子串的时候，只需要在前面第n-1个子串的位置上向后找一
+位就好了，代码如下：
+#include <string>
+#include <stdio.h>
+#include <string.h>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+const int N=200005;
+int a[N];
+char s[N],tmp[N];
+
+int main(){
+    int t;
+    scanf("%d",&t);
+    while(t--){
+        int n,cnt=0,sum=0;
+        scanf("%d",&n);
+        scanf("%s",s);
+        tmp[0]=s[0];
+        for(int i=0;i<n;i++){  //找第一个子串的数目，并记下位置
+            if(s[i]==tmp[0]){
+                a[cnt++]=i;
+                sum++;
+            }
+        }
+        int cnt_2=0;
+        for(int i=1;i<n;i++){
+            tmp[i]=s[i];
+            cnt_2=0;
+            for(int j=0;j<cnt;j++){
+                if(a[j]+i<n&&s[a[j]+i]==tmp[i]){  //根据前i-1个子串的位置判断第i个字符是否相等
+                    sum++;
+                    a[cnt_2++]=a[j];
+                }
+            }
+            cnt=cnt_2;  //更新新的子串数
+        }
+        printf("%d\n",sum%10007);
+    }
+    return 0;
+}
+
+G：要破坏掉一个电网， 有n个电站编号为1～n，每个电站有它自己的能量值。有一个军事基地编号为0，里面有无限个坦克，可以
+开到某个电站轰炸破坏掉电站，并且一个坦克只能破坏一个。现在要破坏掉其中一些电站，要让电网的总能量值损失一半以上，
+并且要让所有执行任务的坦克去目的地路费最少。
+  图论最短路+01背包(每个站点只有破坏与不破坏两种状态，易见01背包)
+先看数据范围，站点数不超过100个，可以用2维数组创建邻接矩阵，暴力跑出最小花费，再动态规划解决01背包问题，代码如下：
+
+#include <string>
+#include <stdio.h>
+#include <string.h>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+const int N=105;
+int map[N][N],w[N],v[N],vis[N],dp[N*N+5];
+
+int main(){
+	int t;
+	scanf("%d",&t);
+	while(t--){
+        int n,m;
+		scanf("%d%d",&n,&m);
+		for(int i=0;i<=n;i++){
+			for(int j=0;j<=n;j++) map[i][j]=0x3f3f3f3f;
+			map[i][i]=0;
+		}
+		for(int i=0;i<m;i++){
+            int a,b,c;
+			scanf("%d%d%d",&a,&b,&c);
+			if(c<map[a][b]) map[a][b]=map[b][a]=c;
+		}
+		double wantV=0;     //这里注意，可能总的价值为奇数，但是我第一次交的时候过了，应该是数据弱
+		for(int i=1;i<=n;i++){
+			scanf("%d",&v[i]);
+			wantV+=v[i];
+		}
+		wantV=wantV/2.0;
+		for(int i=0;i<=n;i++) w[i]=map[0][i];
+  		memset(vis,0,sizeof(vis));
+        vis[0]=1;
+  		int sum=0,sumv=0;
+		for(int u=0;u<n;u++){  //循环找最短路
+			int minW=1000,head=0;
+			for(int i=1;i<=n;i++) 
+                if(!vis[i] && minW>w[i]){
+				    minW=w[i];
+				    head=i;
+			    }
+			if(head==0) break; 
+			vis[head]=1; sum+=w[head]; sumv+=v[head];
+			for(int i=1;i<=n;i++) 
+                	if(!vis[i]&&w[i]>w[head]+map[head][i]) w[i]=w[head]+map[head][i];
+		}
+		if(sumv<=wantV){
+			printf("impossible\n");
+			continue;
+		}
+		memset(dp,0,sizeof(dp));
+		for(int i=1;i<=n;i++){                //01背包动归解法，dp数组下标记录花费，值记录价值
+			for(int j=sum;j>=w[i];j--) dp[j]=max(dp[j],dp[j-w[i]]+v[i]);
+		}
+		int ans=0;
+		for(int i=0;i<=sum;i++) 
+            if(dp[i]>wantV){
+                ans=i;
+        		break;
+    		}
+		printf("%d\n",ans);
+	}
+	return 0;
+}
+
+J：图论题，判断图是否有环，先看数据范围，最大100，构建邻接矩阵，暴力判断就好，代码如下：
+#include <string>
+#include <stdio.h>
+#include <string.h>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int map[120][120];
+
+int main(){
+    int n,m;
+    while(scanf("%d%d",&n,&m),n||m){
+        memset(map,0,sizeof(map));
+        for(int i=0;i<m;i++){
+            int x,y;
+            scanf("%d%d",&x,&y);
+            map[x][y]=1;
+        }
+        for(int i=0;i<n;i++)        //核心，3重循环压缩路径
+            for(int j=0;j<n;j++)
+                for(int k=0;k<n;k++)
+		            if(map[i][j]==1&&map[j][k]==1) map[i][k]=1;  //此处是我疏忽，i->j->k,则易得i->k
+                    //if(map[i][j]==1&&map[i][k]==1) map[j][k]=1;  
+        bool flag=0;
+        for(int i=0;i<n;i++){
+            for(int j=i+1;j<n;j++){
+                if(map[i][j]==1&&map[j][i]==1){  //判断是否首尾相连，是则成环
+                    flag=1;
+                    break;
+                }
+            }
+            if(flag) break;
+        }
+        if(!flag) printf("YES\n");
+        else printf("NO\n");        
+        
+    }
+    return 0;
+}
