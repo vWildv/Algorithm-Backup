@@ -1,5 +1,4 @@
-#include <map>
-#include <math.h>
+#include <stack>
 #include <stdio.h>
 #include <string.h>
 #include <iostream>
@@ -7,31 +6,20 @@
 using namespace std;
 typedef long long ll;
 
-int bit[128];
+int bit[64];
 
 int main(){
-    ll n,k;
-    scanf("%lld%lld",&n,&k);
-    for(int i=0;n;n/=2,i++){
-        bit[i+64]=n%2;
-        k-=bit[i+64];
-    }
-    if(k<0) printf("No\n");
-    else{
-        for(int i=127;i>0;i--){
-            if(bit[i]>k) break;
-            k-=bit[i];
-            bit[i-1]+=bit[i]*2;
-            bit[i]=0;
+    int n;
+    scanf("%d",&n);
+    while(n--){
+        int x;
+        scanf("%d",&x);
+        int cnt=-1;
+        for(int i=0;x;x/=2,i++){
+            cnt++;
+            bit[i]=x%2;
         }
-        int cnt=0;
-        while(!bit[cnt]) cnt++;
-        bit[cnt]--;
-        printf("Yes\n");
-        for(int i=127;i>=cnt;i--){
-            while(bit[i]--) printf("%d ",i-64);
-        }
-        for(int i=1;i<=k;i++) printf("%d ",cnt-i-64);
-        printf("%d\n",cnt-k-64);
+        for(int i=cnt;i>=0;i--) printf("%d ",bit[i]);
+        printf("\n");
     }
 }
