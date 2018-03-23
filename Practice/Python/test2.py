@@ -38,7 +38,7 @@ def download_image(url):
     image_amount=sel.xpath("//div[@class='pagenavi']/a[last()-1]/span/text()")[0]
     image_title=sel.xpath("//h2[@class='main-title']/text()")[0]
     cnt=1
-    file_path='c:/Test/img/'+image_title
+    file_path='/mnt/c/Test/img/'+image_title
     #file_path='/home/wild/Test/img/'+image_title
     if not os.path.exists(file_path):
         print('build ',file_path)

@@ -1,5 +1,6 @@
 {
     //"C_Cpp.errorSquiggles": "Disabled",
     "python.linting.enabled": false,
-    "C_Cpp.errorSquiggles": "Disabled"
+    "C_Cpp.errorSquiggles": "Disabled",
+    "C_Cpp.intelliSenseEngineFallback": "Enabled"
 }
