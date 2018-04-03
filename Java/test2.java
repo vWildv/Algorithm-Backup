@@ -5,6 +5,7 @@ public class test2{
     public static void main(String[] args){
         Scanner cin=new Scanner(System.in);
         int l=100,r=999;
+        l=cin.nextInt(); r=cin.nextInt();
         for(int i=l;i<=r;i++)
             if(check(i)) System.out.println(i);
     }
