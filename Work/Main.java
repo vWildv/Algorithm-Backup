@@ -10,7 +10,7 @@ class Animal{
     }
     public String getanimalname(){  
         return name;  
-    }  
+    }
 }
 
 class Simulator{  
@@ -19,15 +19,16 @@ class Simulator{
         if(a.op==1) System.out.println("Wang,Wang...");  
     }  
 }
+
 class Dog extends Animal{  
-    Dog(int opp, String b) {  
+    Dog(int opp, String b){  
         super(opp, b);  
     }   
 }
 
 class Cat extends Animal{  
     Cat(int opp, String b){  
-        super(opp, b);  
+        super(opp, b);
     }  
 }
 
@@ -45,7 +46,7 @@ public class Main{
                 nn=cat1.getanimalname();  
                 System.out.printf("%s:",nn);  
                 Simulator pp=new Simulator();  
-                pp.playsound(cat);  
+                pp.playsound(cat);
             }  
             if(flag==1){  
                 Animal dog=new Animal(flag,name1);  
@@ -58,4 +59,4 @@ public class Main{
             }  
         }  
     }  
-}  
+}
